@@ -1,5 +1,4 @@
 defmodule ExProtobuf.Decoder do
-  use Bitwise, only_operators: true
   require ExProtobuf.Utils, as: Utils
   alias ExProtobuf.Field
   alias ExProtobuf.OneOfField
@@ -7,7 +6,7 @@ defmodule ExProtobuf.Decoder do
   # Decode with record/module
   def decode(bytes, module) do
     defs =
-      for {{type, mod}, fields} <- module.defs, into: [] do
+      for {{type, mod}, fields} <- module.defs(), into: [] do
         case type do
           :msg ->
             {{:msg, mod},
@@ -30,7 +29,7 @@ defmodule ExProtobuf.Decoder do
     |> :gpb.decode_msg(module, defs)
     |> Utils.convert_from_record(module)
     |> convert_fields()
-    |> unwrap_scalars(Utils.msg_defs(module.defs))
+    |> unwrap_scalars(Utils.msg_defs(module.defs()))
   end
 
   def varint(bytes) do
